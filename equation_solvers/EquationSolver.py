@@ -8,7 +8,7 @@ class EquationSolver:
     max_iterations: int
     equation: str
     root_found: bool
-    roots: Root
+    roots: list
 
     DEFAULT_MAX_ITERATIONS = 50
     DEFAULT_EPSILON = 0.0001
@@ -24,11 +24,9 @@ class EquationSolver:
         first_deriv = Derivative(equation, x).doit()
         return Derivative(first_deriv, x).doit().subs({x: value})
 
-    @staticmethod
-    def evaluate_equation(equation, value_to_substitute) -> float:
+    def evaluate_equation(self, value_to_substitute) -> float:
         x = value_to_substitute
-        return eval(equation)
-
+        return eval(self.equation)
 
     def __init__(self, equation, max_iterations=DEFAULT_MAX_ITERATIONS, precision=DEFAULT_EPSILON):
         self.equation = equation
@@ -68,3 +66,6 @@ class EquationSolver:
             self._precision = precision
         else:
             self._precision = self.DEFAULT_EPSILON
+
+    def calculate_precision(self, old_root, new_root) -> float:
+        return (new_root - old_root) / new_root
