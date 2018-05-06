@@ -46,8 +46,3 @@ class Secant(EquationSolver):
         new_value = self.evaluate_equation(new_root)
         return (new_root - (new_value * ((new_root - old_root) / (
                 new_value - old_value))))
-
-
-secant = Secant("exp(-x) - x", 0, 1)
-secant.precision = 0.0000001
-print(secant.roots)
