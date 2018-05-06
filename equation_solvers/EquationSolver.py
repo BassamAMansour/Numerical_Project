@@ -1,4 +1,4 @@
-from sympy import Symbol, Derivative
+from sympy import Symbol, Derivative, simplify
 
 from equation_solvers import Root
 
@@ -25,8 +25,8 @@ class EquationSolver:
         return Derivative(first_deriv, x).doit().subs({x: value})
 
     def evaluate_equation(self, value_to_substitute) -> float:
-        x = value_to_substitute
-        return eval(self.equation)
+        simple_equation = simplify(self.equation)
+        return simple_equation.subs("x", value_to_substitute).evalf()
 
     def __init__(self, equation, max_iterations=DEFAULT_MAX_ITERATIONS, precision=DEFAULT_EPSILON):
         self.equation = equation
@@ -49,7 +49,7 @@ class EquationSolver:
     def max_iterations(self):
         return self._max_iterations
 
-    @max_iterations.setter23
+    @max_iterations.setter
     def max_iterations(self, max_iterations):
         if max_iterations > 0:
             self._max_iterations = max_iterations
