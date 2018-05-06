@@ -68,4 +68,4 @@ class EquationSolver:
             self._precision = self.DEFAULT_EPSILON
 
     def calculate_precision(self, old_root, new_root) -> float:
-        return (new_root - old_root) / new_root
+        return abs(new_root - old_root) / new_root
