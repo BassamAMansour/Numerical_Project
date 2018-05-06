@@ -1,6 +1,6 @@
 from sympy import Symbol, Derivative
 
-from equation_solvers import Root
+from equation_solvers.Root import Root
 
 
 class EquationSolver:
@@ -8,8 +8,6 @@ class EquationSolver:
     max_iterations: int
     equation: str
     root_found: bool
-    roots: Root
-
     DEFAULT_MAX_ITERATIONS = 50
     DEFAULT_EPSILON = 0.0001
 
@@ -24,18 +22,16 @@ class EquationSolver:
         first_deriv = Derivative(equation, x).doit()
         return Derivative(first_deriv, x).doit().subs({x: value})
 
-    @staticmethod
-    def evaluate_equation(equation, value_to_substitute) -> float:
-        x = value_to_substitute
-        return eval(equation)
-
-
     def __init__(self, equation, max_iterations=DEFAULT_MAX_ITERATIONS, precision=DEFAULT_EPSILON):
         self.equation = equation
         self.max_iterations = max_iterations
         self.precision = precision
         self.roots = []
         self.root_found = False
+
+    def evaluate_equation(self,value_to_substitute) -> float:
+        x = value_to_substitute
+        return eval(self.equation)
 
     def next_iteration(self) -> bool:
 

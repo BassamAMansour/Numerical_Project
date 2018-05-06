@@ -1,4 +1,5 @@
 from equation_solvers.EquationSolver import EquationSolver
+from equation_solvers.Root import Root
 
 
 class FalsePosition(EquationSolver):
@@ -17,23 +18,42 @@ class FalsePosition(EquationSolver):
 
     def getRoot(self):
         root = 0
-        fxl = super().evaluate_equation(super().equation, self.lower_bound)
-        fxu = super().evaluate_equation(super().equation, self.upper_bound)
+        eq = 0
+        first_iteration = True
+        fxl = super().evaluate_equation(self.lower_bound)
+        fxu = super().evaluate_equation(self.upper_bound)
         if fxl * fxu > 0 :
             print("no bracket")
-            # what to return if no bracket
             return 0
 
         for i in range(0, self.max_iterations):
-            fxl = super().evaluate_equation(super().equation, self.lower_bound)
-            fxu = super().evaluate_equation(super().equation, self.upper_bound)
+            fxl = super().evaluate_equation(self.lower_bound)
+            fxu = super().evaluate_equation(self.upper_bound)
             root = (self.lower_bound *fxu - self.upper_bound * fxl) / (fxu - fxl)
-            fxr = super().evaluate_equation(super().equation, root)
+            if first_iteration:
+                ea = None
+                first_iteration = False
+            else:
+                ea = abs((root - self.roots[-1].root)/ root)
+            fxr = super().evaluate_equation(root)
+            root1 = Root()
+            root1.root = root
+            root1.precision = ea
+            self.add_root(root1)
             if fxr < 0 :
                 self.lower_bound = root
             elif fxr > 0:
                 self.upper_bound = root
             else :
-                print("root found :" + root)
-                return root
+                break
+            if not first_iteration and ea <self.precision:
+                break
+
+
+        if i>= self.max_iterations:
+            print("root not found to desired tolerance")
+            self.root_found = False
+            return root
+        self.root_found = True
+        return root
 

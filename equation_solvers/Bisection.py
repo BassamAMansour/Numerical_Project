@@ -1,4 +1,5 @@
 from equation_solvers.EquationSolver import EquationSolver
+from equation_solvers.Root import Root
 
 
 class Bisection(EquationSolver):
@@ -18,29 +19,37 @@ class Bisection(EquationSolver):
 
     def get_root(self):
         root = 0
-        fxl = super().evaluate_equation(super().equation , self.lower_bound)
-        fxu = super().evaluate_equation(super().equation , self.upper_bound)
+        first_iteration = True
+        ea= 0
+        fxl = super().evaluate_equation( self.lower_bound)
+        fxu = super().evaluate_equation(self.upper_bound)
         if fxl * fxu > 0 :
             print("no bracket")
-            # what to return if no bracket
             return None
         for i in range (1 , self.max_iterations):
-
             root = (self.lower_bound +self.upper_bound)/2
-            ea = abs((self.upper_bound - self.lower_bound)/ self.lower_bound)
-            check = super().evaluate_equation(super().evaluate_equation(), self.lower_bound) *super().evaluate_equation(super().evaluate_equation(), root)
-
+            if first_iteration:
+                ea = None
+                first_iteration = False
+            else:
+                ea = abs((root - self.roots[-1].root)/ root)
+            check = super().evaluate_equation(self.lower_bound) *super().evaluate_equation(root)
             if check < 0 :
                 self.upper_bound = root
             elif check > 0 :
                 self.lower_bound = root
             else:
                 ea = 0
-
-            if ea < self.precision :
+            root1 = Root()
+            root1.root = root
+            root1.precision = ea
+            self.add_root(root1)
+            if not first_iteration and ea <self.precision:
                 break
+
         if i>= self.max_iterations:
             print("root not found to desired tolerance")
-            #return what if it exceded the desired tolerance
-            return None
+            self.root_found = False
+            return root
+        self.root_found = True
         return root
