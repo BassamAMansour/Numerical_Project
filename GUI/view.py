@@ -47,14 +47,14 @@ def is_fast():
     iterate.grid_forget()
 def solve():
     function = functionEntry.get()
+    initial = float(additional_entry.get())
     solver = EquationSolver(function, 20, 0.00001)
     global method
     global mode
     if method == 1:
-        instance = NewtonRaphson("x**2")
-        instance.get_root(0)
+        instance = NewtonRaphson(function, initial)
     elif method == 2:
-        instance = FixedPoint()
+        instance = FixedPoint(function, initial)
     elif method == 3:
         instance = Bisection()
     elif method == 4:

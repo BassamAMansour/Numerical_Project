@@ -1,6 +1,6 @@
 class Root:
-    root: float
-    precision: float
+    root = 0.0
+    precision = 0.0
 
     def __init__(self, root, precision):
         self.root = root
