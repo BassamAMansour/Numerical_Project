@@ -17,36 +17,36 @@ glob_i = 0
 glob_h = 0
 # Functions ---------------------------------------------------------------------------------
 def prepare_newton():
-    label_current_method.config(text = "   Method  :  Newton" , fg = 'GREEN')
+    label_current_method.config(text = "       Method  :  Newton" , fg = 'GREEN')
     global method
     method = 1
 def prepare_fixed_point():
-    label_current_method.config(text = "   Method  :  F-Point" , fg = 'GREEN')
+    label_current_method.config(text = "       Method  :  F-Point" , fg = 'GREEN')
     global method
     method = 2
 def prepare_bisection():
-    label_current_method.config(text = "   Method  :  Bisec." , fg = 'GREEN')
+    label_current_method.config(text = "       Method  :  Bisec." , fg = 'GREEN')
     global method
     method = 3
 def prepare_secant():
-    label_current_method.config(text = "   Method  :  Secant" , fg = 'GREEN')
+    label_current_method.config(text = "       Method  :  Secant" , fg = 'GREEN')
     global method
     method = 4
 def prepare_bierge_vieta():
-    label_current_method.config(text = "   Method  :  B-Vieta" , fg = 'GREEN')
+    label_current_method.config(text = "       Method  :  B-Vieta" , fg = 'GREEN')
     global method
     method = 5
 def prepare_false_position():
-    label_current_method.config(text = "   Method  :  False-Pos" , fg = 'GREEN')
+    label_current_method.config(text = "       Method  :  False-Pos" , fg = 'GREEN')
     global method
     method = 6
 def is_slow():
-    label_current_mode.config(text = "   Mode     :  Slow" , fg = 'GREEN')
+    label_current_mode.config(text = "       Mode     :  Slow" , fg = 'GREEN')
     global mode
     mode = 1
     iterate.grid(row = 0, rowspan = 15 ,columnspan = 4,sticky= W, column = 0)
 def is_fast():
-    label_current_mode.config(text = "   Mode     :  Fast" , fg = 'GREEN')
+    label_current_mode.config(text = "       Mode     :  Fast" , fg = 'GREEN')
     global mode
     mode = 0
     iterate.grid_forget()
@@ -142,10 +142,10 @@ label_empty.grid(row = 0, column = 1)
 label_init = Label(root, text = "initial",font=("Courier", 15), fg = 'BLUE')
 label_init.grid(row = 0, column = 2, sticky = W)
 
-label_current_method = Label(root, text = "   Method  :   None", font=("Helvetica", 20), fg = 'RED')
+label_current_method = Label(root, text = "       Method  :   None", font=("Helvetica", 20), fg = 'RED')
 label_current_method.grid(row = 13, column  = 1, sticky = W)
 
-label_current_mode = Label(root, text = "   Mode     :  None", font=("Helvetica", 20), fg = 'RED')
+label_current_mode = Label(root, text = "       Mode     :   None", font=("Helvetica", 20), fg = 'RED')
 label_current_mode.grid(row = 12, column  = 1, sticky = W)
 
 label_enter_function = Label(root, text = "                        ", font=("Courier", 20))
