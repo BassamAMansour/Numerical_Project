@@ -1,6 +1,6 @@
 from sympy import Symbol, Derivative, simplify
 
-from equation_solvers.Root import Root
+from equation_solvers import Root
 
 
 class EquationSolver:
