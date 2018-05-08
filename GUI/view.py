@@ -91,7 +91,8 @@ def is_fast():
 def solve():
     function = functionEntry.get()
     initial = float(additional_entry.get())
-    initial2 = float(additional_entry2.get())
+    if additional_entry2.get() is not "" :
+         initial2 = float(additional_entry2.get())
     solver = EquationSolver(function, 20, 0.00001)
     global method
     global mode
@@ -185,7 +186,7 @@ def nextIteration():
 root = Tk()
 root.title('Numerical Analysis')
 root.resizable(width=FALSE, height=FALSE)
-root.geometry('{}x{}'.format(1250, 800))
+root.geometry('{}x{}'.format(1300, 800))
 
 # Labels-----------------------------------------------------------------------------------------
 
