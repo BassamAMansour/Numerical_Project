@@ -5,14 +5,15 @@ from equation_solvers.Root import Root
 class NewtonRaphson(EquationSolver):
 
     # Add suitable args
-    def __init__(self, equation):
+    def __init__(self, equation, initial):
         super().__init__(equation)
+        self.get_root(initial)
 
 
     def get_root(self,initial):
         last_root=0
         current_root=0
-        derivative = self.get_derivative(self.equation)
+        derivative = self.get_first_derivative(self.equation)
         if derivative == 0 :
             self.root_found = False
             return None

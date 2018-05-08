@@ -1,14 +1,14 @@
 from sympy import Symbol, Derivative, simplify
 
-from equation_solvers.Root import Root
+from equation_solvers import Root
 
 
 class EquationSolver:
-    precision: float
-    max_iterations: int
-    equation: str
-    root_found: bool
-    roots: list
+    precision = 0.0
+    max_iterations =  0
+    equation = ""
+    root_found = False
+    roots = []
 
     DEFAULT_MAX_ITERATIONS = 50
     DEFAULT_EPSILON = 0.0001
