@@ -18,7 +18,6 @@ class BiergeVieta(EquationSolver):
 
         b[0] = a[0]
         c[0] = a[0]
-
         for i in range(1, n + 1, 1):
             b[i] = (x_0 * b[i - 1] + a[i])
         for i in range(1, n, 1):
