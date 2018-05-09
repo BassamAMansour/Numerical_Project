@@ -191,9 +191,9 @@ root.geometry('{}x{}'.format(1300, 800))
 # Labels-----------------------------------------------------------------------------------------
 
 label_empty = Label(root, text = "Enter the function",font=("Helvetica", 20))
-label_empty.grid(row = 0, column = 1)
+#label_empty.grid(row = 0, column = 1)
 
-label_init = Label(root, text = "initials",font=("Courier", 15), fg = 'BLUE')
+label_init = Label(root, text = "initials",font=("Helvetica", 15), fg = 'BLUE')
 label_init.grid(row = 0, column = 2, sticky = W)
 
 
@@ -210,6 +210,7 @@ label_enter_function.grid(row = 10, column = 0)
 
 functionEntry = Entry(root, font=("Helvetica", 20), width = 23)
 functionEntry.grid(row = 10, column = 1)
+functionEntry.config(text = "heeh", fg = "blue")
 
 additional_entry = Entry(root, font=("Helvetica", 20), width = 5)
 additional_entry.grid(row = 10, column = 2,sticky = W)
@@ -234,9 +235,9 @@ iterate.grid_forget()
 
 # menus------------------------------------------------------------------------------------------
 
-menu = Menu(root, font=("Courier", 20))
+menu = Menu(root, font=("Helvetica", 20))
 root.config(menu = menu)
-submenu = Menu(menu, font=("Courier", 20), borderwidth=2, relief="solid")
+submenu = Menu(menu, font=("Helvetica", 20), borderwidth=2, relief="solid")
 menu.add_cascade(label = "Methods | ", menu = submenu)
 menu.add_separator()
 submenu.add_radiobutton(label = "Newton's" ,command = prepare_newton)
@@ -246,18 +247,18 @@ submenu.add_radiobutton(label = "Secant" ,command = prepare_secant)
 submenu.add_radiobutton(label = "Bierge Vieta", command = prepare_bierge_vieta)
 submenu.add_radiobutton(label = "False Position", command = prepare_false_position)
 
-submenu2 = Menu(menu, font=("Courier", 20),borderwidth=2, relief="groove")
+submenu2 = Menu(menu, font=("Helvetica", 20),borderwidth=2, relief="groove")
 menu.add_cascade(label = "Mode | ", menu = submenu2)
 submenu2.add_radiobutton(label = "Slow" ,command = is_slow)
 submenu2.add_radiobutton(label = "Fast" ,command = is_fast)
 
 
-submenu3 = Menu(menu, font=("Courier", 20),borderwidth=2, relief="groove")
+submenu3 = Menu(menu, font=("Helvetica", 20),borderwidth=2, relief="groove")
 menu.add_cascade(label = "Approximation | ", menu = submenu3)
 submenu3.add_radiobutton(label = "Rounding" ,command = is_rounding)
 submenu3.add_radiobutton(label = "Chopping" ,command = is_chopping)
 
-submenu4 = Menu(menu, font=("Courier", 20),borderwidth=2, relief="groove")
+submenu4 = Menu(menu, font=("Helvetica", 20),borderwidth=2, relief="groove")
 menu.add_cascade(label = "Constants", menu = submenu4)
 submenu4.add_radiobutton(label = "Precision" ,command = popup)
 submenu4.add_radiobutton(label = "Maximum Iteration" ,command = popup)
