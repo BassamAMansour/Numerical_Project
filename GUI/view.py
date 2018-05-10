@@ -1,3 +1,4 @@
+import tkinter
 from doctest import master
 from tkinter import *
 from tkinter.font import BOLD
@@ -13,7 +14,15 @@ from equation_solvers.NewtonRaphson import NewtonRaphson
 from equation_solvers.Root import Root
 from equation_solvers.Secant import Secant
 
-
+rounding = True
+globalValue = 0
+method = 0
+mode = 0
+instance = 0
+glob_i = 0
+glob_h = 0
+round_to = 6
+table_as_list = []
 
 class popupWindow():
     def __init__(self):
@@ -32,49 +41,42 @@ class popupWindow():
         self.value=self.e.get()
         self.top.destroy()
 
-rounding = True
-globalValue = 0
-method = 0
-mode = 0
-instance = 0
-glob_i = 0
-glob_h = 0
-round_to = 6
 # Functions ---------------------------------------------------------------------------------
 def prepare_newton():
-    label_current_method.config(text = "Method  :  Newton" , fg = 'GREEN')
+    label_current_method.config(text = "=> Newton Raphson <=" , fg = 'GREEN')
     additional_entry2.grid_forget()
     global method
     method = 1
 def prepare_fixed_point():
-    label_current_method.config(text = "Method  :  F-Point" , fg = 'GREEN')
+    label_current_method.config(text = "=> Fixed Point <=" , fg = 'GREEN')
     additional_entry2.grid_forget()
     global method
     method = 2
 def prepare_bisection():
-    label_current_method.config(text = "Method  :  Bisec." , fg = 'GREEN')
+    label_current_method.config(text = "=> Bisection <=" , fg = 'GREEN')
     additional_entry2.grid(row=11, column=2, sticky=W)
     global method
     method = 3
 def prepare_secant():
-    label_current_method.config(text = "Method  :  Secant" , fg = 'GREEN')
+    label_current_method.config(text = "=> Secant <=" , fg = 'GREEN')
     additional_entry2.grid(row=11, column=2, sticky=W)
     global method
     method = 4
 def prepare_bierge_vieta():
-    label_current_method.config(text = "Method  :  B-Vieta" , fg = 'GREEN')
+    label_current_method.config(text = "=> Bierge Vieta <=" , fg = 'GREEN')
     additional_entry2.grid_forget()
     global method
     method = 5
 def prepare_false_position():
-    label_current_method.config(text = "Method  :  False-Pos" , fg = 'GREEN')
+    label_current_method.config(text = "=> False Position <=" , fg = 'GREEN')
     additional_entry2.grid(row=11, column=2, sticky=W)
     global method
     method = 6
 def is_slow():
-    label_current_mode.config(text = "Mode     :  Slow" , fg = 'GREEN')
+    label_current_mode.config(text = "=> Slow Iteration <=" , fg = 'GREEN')
     global mode
     mode = 1
+    root.geometry('{}x{}'.format(1100, 800))
     iterate.grid(row = 0, rowspan = 15 ,columnspan = 4,sticky= W, column = 0)
 def is_chopping():
     global rounding
@@ -93,9 +95,10 @@ def on_focusout(event):
         functionEntry.insert(0, 'Enter the function')
         functionEntry.config(fg = 'grey')
 def is_fast():
-    label_current_mode.config(text = "Mode     :  Fast" , fg = 'GREEN')
+    label_current_mode.config(text = "=> Fast Iteration <=" , fg = 'GREEN')
     global mode
     mode = 0
+    root.geometry('{}x{}'.format(730, 800))
     iterate.grid_forget()
 def solve():
     function = functionEntry.get()
@@ -121,50 +124,83 @@ def solve():
     height = len(instance.roots)
 
     if(mode == 0) :
-        b = Label(frame, borderwidth=2, relief="solid", text="i", font=("Courier", 12), width=5, fg="RED",
+        b = Label(frame_labels, borderwidth=2, relief="solid", text="i", font=("Courier", 12), width=5, fg="RED",
                   bg="YELLOW")
-        b.grid(sticky=W, row=0, column=0)
-        b = Label(frame,borderwidth=2, relief="solid", text="Root", font=("Courier", 12), width=15, fg="RED", bg="YELLOW")
-        b.grid(sticky=W, row=0, column=1)
-        b = Label(frame,borderwidth=2, relief="solid", text="Precision", font=("Courier", 12), width=15, fg="RED", bg="YELLOW")
-        b.grid(sticky=W, row=0, column=2)
+        b.grid(sticky='news', row=0, column=0)
+        table_as_list.append(b)
+        b = Label(frame_labels,borderwidth=2, relief="solid", text="Root", font=("Courier", 12), width=15, fg="RED", bg="YELLOW")
+        b.grid(sticky='news', row=0, column=1)
+        table_as_list.append(b)
+        b = Label(frame_labels,borderwidth=2, relief="solid", text="Precision", font=("Courier", 12), width=15, fg="RED", bg="YELLOW")
+        b.grid(sticky='news', row=0, column=2)
+        table_as_list.append(b)
         width = 2
         global round_to
+
         for i in range(0, height):  # Rows
-            b = Label(frame, borderwidth=2, relief="groove", text=str(i + 1), font=("Courier", 12), width=5, fg="RED",
+            f = 0
+            g = 0
+            if (i > 25):
+                f = 26
+                g = 3
+            if (i > 51):
+                f = 52
+                g = 6
+            if (i > 77):
+                root.geometry('{}x{}'.format(1480, 800))
+                f = 78
+                g = 9
+            b = Label(frame_labels, borderwidth=2, relief="groove", text=str(i + 1), font=("Courier", 12), width=5, fg="RED",
                       bg="YELLOW")
-            b.grid(sticky=W, row=i+1, column=0)
+            b.grid(sticky='news', row=i+1-f, column=0+g)
+            table_as_list.append(b)
             for j in range(0, width):  # Columns
                 if j == 0 :
-                    root = instance.roots[i].root
-                    if root != None :
-                        root = round(root, round_to)
-                    r = str(root)
-                    b = Label(frame, borderwidth=2, relief="groove", text= r, font=("Courier", 12), width=15, fg="BLUE", bg="white")
-                    b.grid(sticky=W, row=i + 1, column=j + 1)
+                    current_root = instance.roots[i].root
+                    if current_root != None :
+                        current_root = round(current_root, round_to)
+                    r = str(current_root)
+                    b = Label(frame_labels, borderwidth=2, relief="groove", text= r, font=("Courier", 12), width=15, fg="BLUE", bg="white")
+                    b.grid(sticky='news', row=i + 1-f , column=j + 1+g)
+                    table_as_list.append(b)
+
                 else :
                     precision = instance.roots[i].precision
                     if precision != None :
                         precision = round(precision, round_to)
                     p = str(precision)
-                    b = Label(frame,borderwidth=2, relief="groove", text= p , font=("Courier", 12), width=15, fg="BLUE", bg="white")
-                    b.grid(sticky=W, row=i + 1, column=j + 1)
+                    b = Label(frame_labels,borderwidth=2, relief="groove", text= p , font=("Courier", 12), width=15, fg="BLUE", bg="white")
+                    b.grid(sticky='news', row=i + 1-f, column=j + 1+g)
+                    table_as_list.append(b)
     else :
-        b = Label(frame, borderwidth=2, relief="solid", text="i", font=("Courier", 12), width=5, fg="RED",
+        b = Label(frame_labels, borderwidth=2, relief="solid", text="i", font=("Courier", 12), width=5, fg="RED",
                   bg="YELLOW")
-        b.grid(sticky=W, row=0, column=0)
-        b = Label(frame, borderwidth=2, relief="solid", text="Root", font=("Courier", 12), width=15, fg="RED",
+        b.grid(sticky='news', row=0, column=0)
+        table_as_list.append(b)
+        b = Label(frame_labels, borderwidth=2, relief="solid", text="Root", font=("Courier", 12), width=15, fg="RED",
                   bg="YELLOW")
-        b.grid(sticky=W, row=0, column=1)
-        b = Label(frame, borderwidth=2, relief="solid", text="Precision", font=("Courier", 12), width=15, fg="RED",
+        b.grid(sticky='news', row=0, column=1)
+        table_as_list.append(b)
+        b = Label(frame_labels, borderwidth=2, relief="solid", text="Precision", font=("Courier", 12), width=15, fg="RED",
                   bg="YELLOW")
-        b.grid(sticky=W, row=0, column=2)
+        b.grid(sticky='news', row=0, column=2)
+        table_as_list.append(b)
         global glob_i, glob_h
         glob_i = 0
         glob_h = height
         nextIteration()
 def popup():
     w = popupWindow()
+
+def createNew() :
+    functionEntry.delete(0, 'end')
+    additional_entry.delete(0, 'end')
+    additional_entry2.delete(0, 'end')
+    label_current_method.config(fg = "red", text = "Please select method")
+    label_current_mode.config(fg = "red", text = "please select a mode")
+    global table_as_list
+    for i in range (0, len(table_as_list)) :
+        table_as_list[i].grid_forget()
 
 def nextIteration():
     global glob_i
@@ -173,29 +209,51 @@ def nextIteration():
     if glob_i >=glob_h :
         return
     else :
-        b = Label(frame, borderwidth=2, relief="groove", text=str(glob_i + 1), font=("Courier", 12), width=5, fg="RED",
+        f=0
+        g = 0
+        if (glob_i > 25):
+            f = 26
+            g = 3
+        if (glob_i > 51):
+            f = 52
+            g = 6
+        if (glob_i > 77):
+            root.geometry('{}x{}'.format(1480, 800))
+            f = 78
+            g = 9
+        b = Label(frame_labels, borderwidth=2, relief="groove", text=str(glob_i + 1), font=("Courier", 12), width=5, fg="RED",
                   bg="YELLOW")
-        b.grid(sticky=W, row=glob_i + 1, column=0)
-
-        root = instance.roots[glob_i].root
-        if root != None :
-                root = round(root, round_to)
-        r = str(root)
-        b = Label(frame, borderwidth=2, relief="groove", text=r, font=("Courier", 12), width=15, fg="BLUE", bg="white")
-        b.grid(sticky=W, row=glob_i + 1, column=1)
-
+        b.grid(sticky='news', row=glob_i - f + 1, column=0 + g)
+        table_as_list.append(b)
+        current_root = instance.roots[glob_i].root
+        if current_root != None :
+            current_root = round(current_root, round_to)
+        r = str(current_root)
+        b = Label(frame_labels, borderwidth=2, relief="groove", text=r, font=("Courier", 12), width=15, fg="BLUE", bg="white")
+        b.grid(sticky='news', row=glob_i - f + 1, column=1 + g)
+        table_as_list.append(b)
         precision = instance.roots[glob_i].precision
         if precision != None :
           precision = round(precision, round_to)
         p = str(precision)
-        b = Label(frame, borderwidth=2, relief="groove", text=p, font=("Courier", 12), width=15, fg="BLUE", bg="white")
-        b.grid(sticky=W, row=glob_i + 1, column=2)
+        b = Label(frame_labels, borderwidth=2, relief="groove", text=p, font=("Courier", 12), width=15, fg="BLUE", bg="white")
+        b.grid(sticky='news', row=glob_i + 1 - f, column=2 + g )
+        table_as_list.append(b)
         glob_i += 1
 
 root = Tk()
 root.title('Numerical Analysis')
-root.resizable(width=FALSE, height=FALSE)
-root.geometry('{}x{}'.format(1300, 800))
+root.grid_rowconfigure(0, weight=1)
+root.columnconfigure(0, weight=1)
+root.geometry('{}x{}'.format(730, 800))
+
+
+canvas = Canvas(root, width = 800, height = 800)
+canvas.grid(row = 20, column = 0, sticky="news",columnspan = 4)
+
+frame_labels = Frame(canvas)
+canvas.create_window((0, 0), window=frame_labels, anchor='nw')
+
 
 # Labels-----------------------------------------------------------------------------------------
 
@@ -206,11 +264,11 @@ label_init = Label(root, text = "initials",font=("Courier", 15), fg = 'BLUE')
 label_init.grid(row = 0, column = 2, sticky = W)
 
 
-label_current_method = Label(root, text = "Method  :   None", font=("Helvetica", 17), fg = 'RED')
-label_current_method.grid(row = 7, column  = 3, sticky = W, rowspan = 5)
+label_current_method = Label(root, text = "Please choose method", font=("Helvetica", 17), fg = 'RED')
+label_current_method.grid(row = 7, column  = 2, sticky = E, rowspan = 5)
 
-label_current_mode = Label(root, text = "Mode     :   None", font=("Helvetica", 17), fg = 'RED')
-label_current_mode.grid(row = 11, column  = 3, sticky = W, rowspan = 5)
+label_current_mode = Label(root, text = "Please choose a mode", font=("Helvetica", 17), fg = 'RED')
+label_current_mode.grid(row = 11, column  = 2, sticky = E, rowspan = 5)
 
 label_enter_function = Label(root, text = "                        ", font=("Courier", 20))
 label_enter_function.grid(row = 10, column = 0)
@@ -234,14 +292,14 @@ additional_entry2.grid_forget()
 # buttons---------------------------------------------------------------------------------------
 
 
-evaluate = Button(root, text = "Solve",borderwidth=4,relief="groove", font=("Helvetica", 15), command = solve, width = 28)
+evaluate = Button(root, text = "Solve",borderwidth=4,relief="groove", font=("Helvetica", 15), command = solve, width = 29)
 evaluate.grid(row = 11, column = 1, sticky = W)
 
 labell = Label(root, text="                                                                                          ")
 labell.grid(row = 12, column = 2)
 
 iterate = Button(root,borderwidth=4, bg="lightgrey", relief="groove", text = "Click to iterate",fg = "yellow", font=("Helvetica BOLD", 17), command = nextIteration, height = 3, width = 23)
-iterate.grid(row = 3, rowspan = 5 ,columnspan = 3,sticky=W, column = 0)
+iterate.grid(row = 3, rowspan = 5 ,columnspan = 2,sticky=W, column = 0)
 iterate.grid_forget()
 
 # menus------------------------------------------------------------------------------------------
@@ -249,6 +307,11 @@ iterate.grid_forget()
 menu = Menu(root, font=("Helvetica", 20))
 root.config(menu = menu)
 submenu = Menu(menu, font=("Helvetica", 20), borderwidth=2, relief="solid")
+submenu0 = Menu(menu, font=("Helvetica", 20),borderwidth=2, relief="groove")
+menu.add_cascade(label = "File | ", menu = submenu0)
+submenu0.add_radiobutton(label = "New" ,command = createNew)
+submenu0.add_radiobutton(label = "Exit" ,command = exit)
+
 menu.add_cascade(label = "Methods | ", menu = submenu)
 menu.add_separator()
 submenu.add_radiobutton(label = "Newton's" ,command = prepare_newton)
