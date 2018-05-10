@@ -31,23 +31,36 @@ globalInterpolation = 0
 class InterpolationWindow():
     def __init__(self):
         root2 = Tk()
-        lblx = Label(root2, font=("Helvetica", 20), width = 10 , borderwidth=2, relief="groove", bg = "yellow", fg = "black", text = "X")
-        lblFx = Label(root2, font=("Helvetica", 20), width = 10 ,  borderwidth=2, relief="groove",bg = "yellow", fg = "black", text = "F(x)")
+        ws = root.winfo_screenwidth()
+        hs = root.winfo_screenheight()
+        x = (ws / 2) - ((globalInterpolation+1)*128 / 2)
+        y = (hs / 2) - (170 / 2)
+        root2.geometry('%dx%d+%d+%d' % ((globalInterpolation+1)*128, 170, x, y))
+        root2.title('Interpolation')
+        lblx = Label(root2, font=("Helvetica", 20), width = 8 , borderwidth=2, relief="groove", bg = "yellow", fg = "black", text = "X")
+        lblFx = Label(root2, font=("Helvetica", 20), width = 8 ,  borderwidth=2, relief="groove",bg = "yellow", fg = "black", text = "F(x)")
         lblx.grid(row = 0, column = 0)
         lblFx.grid(row = 1, column = 0)
         for i in range (0, globalInterpolation) :
-            b = Entry(root2, font=("Helvetica", 20), borderwidth=2, relief="groove", width = 10 )
+            b = Entry(root2, font=("Helvetica", 20), borderwidth=2, relief="groove", width = 8 )
             b.grid(row = 0, column = i + 1)
         for i in range (0, globalInterpolation) :
-            b = Entry(root2, font=("Helvetica", 20), borderwidth=2, relief="groove", width = 10 )
+            b = Entry(root2, font=("Helvetica", 20), borderwidth=2, relief="groove", width = 8 )
             b.grid(row = 1, column = i + 1)
+        btn = Button(root2, text = "get function وان", width = str(globalInterpolation*17),borderwidth=2, relief="groove")
+        btn.grid(row = 2, columnspan = globalInterpolation+1)
 
 
 class InterpolationPopUp():
     def __init__(self):
         top=self.top=Toplevel(master)
+        ws = top.winfo_screenwidth()
+        hs = top.winfo_screenheight()
+        x = (ws / 2) - (200 / 2)
+        y = (hs / 2) - (100 / 2)
+        top.geometry('%dx%d+%d+%d' % (200,100, x, y))
         #top.geometry('{}x{}'.format(200, 100))
-        self.l=Label(top, font=("Helvetica", 16), width = 20, text="Enter Interpolation Order")
+        self.l=Label(top, font=("Helvetica", 16), width = 20, text="Interpolation Order")
         self.l.pack()
         self.e=Entry(top, font=("Helvetica", 16), width = 20)
         self.e.pack()
@@ -63,6 +76,11 @@ class InterpolationPopUp():
 class popupWindow():
     def __init__(self):
         top=self.top=Toplevel(master)
+        ws = top.winfo_screenwidth()
+        hs = top.winfo_screenheight()
+        x = (ws / 2) - (200 / 2)
+        y = (hs / 2) - (200 / 2)
+        top.geometry('%dx%d+%d+%d' % (200, 150, x, y))
         #top.geometry('{}x{}'.format(200, 100))
         self.l=Label(top, font=("Helvetica", 16), width = 20, text="Enter value")
         self.l.pack()
@@ -361,7 +379,7 @@ iterate.grid_forget()
 
 # menus------------------------------------------------------------------------------------------
 
-menu = Menu(root, font=("Helvetica", 17), fg = "blue")
+menu = Menu(root, font=("Helvetica", 17), fg = "black")
 root.config(menu = menu)
 submenu = Menu(menu, font=("Helvetica", 18), borderwidth=2, relief="solid")
 submenu0 = Menu(menu, font=("Helvetica", 18),borderwidth=2, relief="groove")
