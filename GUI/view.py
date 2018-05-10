@@ -79,10 +79,19 @@ def is_slow():
 def is_chopping():
     global rounding
     rounding = False
-
 def is_rounding():
     global rounding
     rounding = True
+def on_entry_click(event):
+    """function that gets called whenever entry is clicked"""
+    if functionEntry.get() == 'Enter the function':
+        functionEntry.delete(0, "end") # delete all the text in the entry
+        functionEntry.insert(0, '') #Insert blank for user input
+        functionEntry.config(fg = 'black')
+def on_focusout(event):
+    if functionEntry.get() == '':
+        functionEntry.insert(0, 'Enter the function')
+        functionEntry.config(fg = 'grey')
 def is_fast():
     label_current_mode.config(text = "Mode     :  Fast" , fg = 'GREEN')
     global mode
@@ -193,7 +202,7 @@ root.geometry('{}x{}'.format(1300, 800))
 label_empty = Label(root, text = "Enter the function",font=("Helvetica", 20))
 #label_empty.grid(row = 0, column = 1)
 
-label_init = Label(root, text = "initials",font=("Helvetica", 15), fg = 'BLUE')
+label_init = Label(root, text = "initials",font=("Courier", 15), fg = 'BLUE')
 label_init.grid(row = 0, column = 2, sticky = W)
 
 
@@ -208,9 +217,11 @@ label_enter_function.grid(row = 10, column = 0)
 
 # Entries-----------------------------------------------------------------------------------------
 
-functionEntry = Entry(root, font=("Helvetica", 20), width = 23)
+functionEntry = Entry(root, font=("Helvetica", 20), width = 23, fg = "grey")
 functionEntry.grid(row = 10, column = 1)
-functionEntry.config(text = "heeh", fg = "blue")
+functionEntry.insert(END, 'Enter the function')
+functionEntry.bind('<FocusIn>', on_entry_click)
+functionEntry.bind('<FocusOut>', on_focusout)
 
 additional_entry = Entry(root, font=("Helvetica", 20), width = 5)
 additional_entry.grid(row = 10, column = 2,sticky = W)
