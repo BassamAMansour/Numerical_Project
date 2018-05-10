@@ -15,7 +15,7 @@ class Bisection(EquationSolver):
         super().__init__(equation)
         self.lower_bound = initial_lower_bound
         self.upper_bound = initial_upper_bound
-
+        self.get_root()
 
     def get_root(self):
         root = 0
@@ -30,7 +30,6 @@ class Bisection(EquationSolver):
             root = (self.lower_bound +self.upper_bound)/2
             if first_iteration:
                 ea = None
-                first_iteration = False
             else:
                 ea = abs((root - self.roots[-1].root)/ root)
             check = super().evaluate_equation(self.lower_bound) *super().evaluate_equation(root)
@@ -40,12 +39,14 @@ class Bisection(EquationSolver):
                 self.lower_bound = root
             else:
                 ea = 0
-            root1 = Root()
+            root1 = Root(0,0)
             root1.root = root
             root1.precision = ea
             self.add_root(root1)
             if not first_iteration and ea <self.precision:
                 break
+            if first_iteration:
+                first_iteration = False
 
         if i>= self.max_iterations:
             print("root not found to desired tolerance")
