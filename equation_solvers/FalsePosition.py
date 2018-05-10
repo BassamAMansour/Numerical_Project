@@ -3,8 +3,8 @@ from equation_solvers.Root import Root
 
 
 class FalsePosition(EquationSolver):
-    upper_bound: float
-    lower_bound: float
+    upper_bound = 0.0
+    lower_bound = 0.0
 
     DEFAULT_INITIAL_LOWER_BOUND = 0
     DEFAULT_INITIAL_UPPER_BOUND = 1000000

@@ -9,6 +9,7 @@ class NewtonRaphson(EquationSolver):
         super().__init__(equation)
         self.get_root(initial)
 
+
     def get_root(self,initial):
         last_root=0
         current_root=0
