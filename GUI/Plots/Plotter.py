@@ -7,10 +7,12 @@ import matplotlib.animation as animation
 from sympy import simplify
 
 from equation_solvers.Root import Root
+from equation_solvers.Secant import Secant
 
 replacements = {
     'sin': 'np.sin',
     'cos': 'np.cos',
+    'tan': 'np.tan',
     'exp': 'np.exp',
     'sqrt': 'np.sqrt',
     '^': '**',
@@ -20,42 +22,118 @@ allowed_words = [
     'x',
     'sin',
     'cos',
+    'tan',
     'sqrt',
     'exp',
 ]
 
+MODE_SLOW = 0
+MODE_FAST = 1
+DEFAULT_MODE = MODE_FAST
+HORIZONTAL_PADDING = 1.1
+
 
 class Plotter:
-    def __init__(self, equation, roots_list, mode):
+    def __init__(self, equation: str, roots_list: list, mode=DEFAULT_MODE):
         self.equation = equation
         self.mode = mode
         self.roots_list = roots_list
         self.modified_expression = self.compute_modified_expression()
 
     def compute_modified_expression(self):
-        self.modified_expression = self.equation
-        for word in re.findall('[a-zA-Z_]+', self.modified_expression):
+        modified_expression = self.equation
+        for word in re.findall('[a-zA-Z_]+', modified_expression):
             if word not in allowed_words:
                 raise ValueError(
                     '"{}" is forbidden to use in math expression'.format(word)
                 )
 
         for old, new in replacements.items():
-            self.modified_expression = self.modified_expression.replace(old, new)
-        x= 'x'
-        return eval(self.modified_expression)
+            modified_expression = modified_expression.replace(old, new)
 
+        return modified_expression
 
     def plot_equation(self):
         max = self.get_max_root()
         min = self.get_min_root()
-        x = np.linspace(min, max, 100)
 
-        fig, axis = plt.subplots()
-        axis.plot(x, self.modified_expression)
-        axis.grid()
-        fig.savefig("test.png")
+        x = np.linspace(int(min * HORIZONTAL_PADDING), int(max * HORIZONTAL_PADDING), 500)
+        y = eval(self.modified_expression)
+
+        if self.mode == MODE_SLOW:
+            self.plot_graph_in_slow_mode(x, y)
+        else:
+            self.plot_graph_in_fast_mode(x, y)
+
+    def plot_graph_in_fast_mode(self, x, y):
+        equation_line, = plt.plot(x, y)
+
+        precision = self.roots_list[-1].precision
+
+        plt.title(
+            "Equation: " + self.equation.__str__() + "\n" +
+            "Root = " + self.roots_list[-1].root.__str__() + "\n" +
+            "Ea = " + precision.__str__() + "%" + " | " +
+            "Iteration = " + self.roots_list.__len__().__str__())
+
+        plt.axvline(x=self.roots_list[-1].root)
+        plt.axhline(y=0)
+        plt.grid()
+        plt.legend()
         plt.show()
+
+    def plot_graph_in_slow_mode(self, x, y):
+        figure = plt.figure()
+        figure.canvas.mpl_connect('button_press_event', self.on_click)
+        self.x = x
+        self.y = y
+        plt.plot()
+
+        self.current_root_index = 0
+
+        equation_line, = plt.plot(x, y)
+
+        precision = self.roots_list[self.current_root_index].precision
+        if not (precision is None):
+            precision = precision * 100
+
+        plt.title(
+            "Equation: " + self.equation.__str__() + "\n" +
+            "Root = " + self.roots_list[self.current_root_index].root.__str__() + "\n" +
+            "Ea = " + precision.__str__() + "%" + " | " +
+            "Iteration = " + str(self.current_root_index + 1))
+
+        plt.axvline(x=self.roots_list[self.current_root_index].root)
+        plt.axhline(y=0)
+        plt.grid()
+
+        plt.show()
+
+    def on_click(self, event):
+        event.canvas.figure.clear()
+        current_canvas = event.canvas.figure.gca()
+
+        self.current_root_index += 1
+        if self.current_root_index >= self.roots_list.__len__():
+            self.current_root_index = 0
+
+        equation_line, = plt.plot(self.x, self.y)
+
+        precision = self.roots_list[self.current_root_index].precision
+        if not (precision is None):
+            precision = precision * 100
+
+        plt.title(
+            "Equation: " + self.equation.__str__() + "\n" +
+            "Root = " + self.roots_list[self.current_root_index].root.__str__() + "\n" +
+            "Ea = " + precision.__str__() + "%" + " | " +
+            "Iteration = " + str(self.current_root_index + 1))
+
+        current_canvas.axvline(x=self.roots_list[self.current_root_index].root)
+        current_canvas.axhline(y=0)
+        current_canvas.grid()
+
+        event.canvas.draw()
 
     def get_max_root(self):
         max = self.roots_list[0].root
@@ -74,7 +152,8 @@ class Plotter:
         return min
 
 
-equation = "sin(x)"
-roots = [Root(-10, 0.001), Root(10, 0.0001)]
-plot = Plotter(equation, roots, 0)
-plot.plot_equation()
+# equation = "exp(x)-x"
+# secant = Secant(equation, 0, 1)
+# roots = secant.roots
+# plot = Plotter(equation, roots, 0)
+# plot.plot_equation()
