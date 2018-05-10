@@ -6,12 +6,13 @@ class Secant(EquationSolver):
     DEFAULT_FIRST_INITIAL_POINT = -1
     DEFAULT_SECOND_INITIAL_POINT = 0
 
-    def __init__(self, equation, first_initial_point=DEFAULT_FIRST_INITIAL_POINT,
-                 second_initial_point=DEFAULT_SECOND_INITIAL_POINT):
+    def __init__(self, equation,first_initial_point=DEFAULT_FIRST_INITIAL_POINT,
+                 second_initial_point=DEFAULT_SECOND_INITIAL_POINT ,max_iterations = EquationSolver.DEFAULT_MAX_ITERATIONS , precision = EquationSolver.DEFAULT_EPSILON):
         super().__init__(equation)
         self.first_initial_point = first_initial_point
         self.second_initial_point = second_initial_point
-        self.start_root_finding()
+        self.max_iterations = max_iterations
+        self.precision = precision
 
     def start_root_finding(self):
 

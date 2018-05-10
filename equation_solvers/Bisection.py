@@ -10,12 +10,13 @@ class Bisection(EquationSolver):
     DEFAULT_INITIAL_UPPER_BOUND = 1000000
 
     # Add suitable args
-    def __init__(self, equation, initial_lower_bound=DEFAULT_INITIAL_LOWER_BOUND,
-                 initial_upper_bound=DEFAULT_INITIAL_UPPER_BOUND):
+    def __init__(self, equation,initial_lower_bound=DEFAULT_INITIAL_LOWER_BOUND,
+                 initial_upper_bound=DEFAULT_INITIAL_UPPER_BOUND, max_Iterations =EquationSolver.DEFAULT_MAX_ITERATIONS , precision = EquationSolver.DEFAULT_EPSILON):
         super().__init__(equation)
         self.lower_bound = initial_lower_bound
         self.upper_bound = initial_upper_bound
-        self.get_root()
+        self.max_iterations = max_Iterations
+        self.precision = precision
 
     def get_root(self):
         root = 0

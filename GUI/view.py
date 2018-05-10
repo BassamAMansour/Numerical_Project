@@ -5,14 +5,15 @@ from tkinter.font import BOLD
 
 from six import b
 
-from equation_solvers.BiergeVieta import BiergeVieta
-from equation_solvers.Bisection import Bisection
+
 from equation_solvers.EquationSolver import EquationSolver
 from equation_solvers.FalsePosition import FalsePosition
 from equation_solvers.FixedPoint import FixedPoint
 from equation_solvers.NewtonRaphson import NewtonRaphson
 from equation_solvers.Root import Root
 from equation_solvers.Secant import Secant
+from equation_solvers.BiergeVieta import BiergeVieta
+from equation_solvers.Bisection import Bisection
 
 rounding = True
 globalValue = 0
@@ -23,57 +24,102 @@ glob_i = 0
 glob_h = 0
 round_to = 6
 table_as_list = []
+MAX_ITERATIONS = 49
+EPSILON_PRESICION = 0.0001
+globalInterpolation = 0
+
+class InterpolationWindow():
+    def __init__(self):
+        root2 = Tk()
+        lblx = Label(root2, font=("Helvetica", 20), width = 10 , borderwidth=2, relief="groove", bg = "yellow", fg = "black", text = "X")
+        lblFx = Label(root2, font=("Helvetica", 20), width = 10 ,  borderwidth=2, relief="groove",bg = "yellow", fg = "black", text = "F(x)")
+        lblx.grid(row = 0, column = 0)
+        lblFx.grid(row = 1, column = 0)
+        for i in range (0, globalInterpolation) :
+            b = Entry(root2, font=("Helvetica", 20), borderwidth=2, relief="groove", width = 10 )
+            b.grid(row = 0, column = i + 1)
+        for i in range (0, globalInterpolation) :
+            b = Entry(root2, font=("Helvetica", 20), borderwidth=2, relief="groove", width = 10 )
+            b.grid(row = 1, column = i + 1)
+
+
+class InterpolationPopUp():
+    def __init__(self):
+        top=self.top=Toplevel(master)
+        #top.geometry('{}x{}'.format(200, 100))
+        self.l=Label(top, font=("Helvetica", 16), width = 20, text="Enter Interpolation Order")
+        self.l.pack()
+        self.e=Entry(top, font=("Helvetica", 16), width = 20)
+        self.e.pack()
+        self.b=Button(top, font=("Helvetica", 16),text='Done',command=self.cleanup)
+        self.b.pack()
+    def cleanup(self):
+        global globalInterpolation
+        globalInterpolation = int(self.e.get()) + 1
+        self.top.destroy()
+        i = InterpolationWindow()
+
 
 class popupWindow():
     def __init__(self):
         top=self.top=Toplevel(master)
-        top.resizable(width=FALSE, height=FALSE)
-        top.geometry('{}x{}'.format(200, 100))
-        self.l=Label(top, font=("Helvetica", 16), width = 20,text="Enter value")
+        #top.geometry('{}x{}'.format(200, 100))
+        self.l=Label(top, font=("Helvetica", 16), width = 20, text="Enter value")
         self.l.pack()
         self.e=Entry(top, font=("Helvetica", 16), width = 20)
         self.e.pack()
-        self.b=Button(top, font=("Helvetica", 16),text='Ok',command=self.cleanup)
+        self.b=Button(top, font=("Helvetica", 16),text='Maximum Iterations',command=self.cleanup)
         self.b.pack()
+        self.c = Button(top, font=("Helvetica", 16), text='Epsilon  Precision', command=self.cleanup2)
+        self.c.pack()
     def cleanup(self):
         global globalValue
+        globalValue = int(self.e.get())
+        global MAX_ITERATIONS
+        MAX_ITERATIONS = globalValue - 1;
+        self.value=self.e.get()
+        self.top.destroy()
+    def cleanup2(self):
+        global globalValue
         globalValue = float(self.e.get())
+        global EPSILON_PRESICION
+        EPSILON_PRESICION = globalValue;
         self.value=self.e.get()
         self.top.destroy()
 
 # Functions ---------------------------------------------------------------------------------
 def prepare_newton():
-    label_current_method.config(text = "=> Newton Raphson <=" , fg = 'GREEN')
+    label_current_method.config(text = "=> Newton Raphson <=  " , fg = 'GREEN')
     additional_entry2.grid_forget()
     global method
     method = 1
 def prepare_fixed_point():
-    label_current_method.config(text = "=> Fixed Point <=" , fg = 'GREEN')
+    label_current_method.config(text = "=> Fixed Point <=  " , fg = 'GREEN')
     additional_entry2.grid_forget()
     global method
-    method = 2
+    method = 3
 def prepare_bisection():
-    label_current_method.config(text = "=> Bisection <=" , fg = 'GREEN')
+    label_current_method.config(text = "=> Bisection <=  " , fg = 'GREEN')
     additional_entry2.grid(row=11, column=2, sticky=W)
     global method
-    method = 3
+    method = 2
 def prepare_secant():
-    label_current_method.config(text = "=> Secant <=" , fg = 'GREEN')
+    label_current_method.config(text = "=> Secant <=  " , fg = 'GREEN')
     additional_entry2.grid(row=11, column=2, sticky=W)
     global method
     method = 4
 def prepare_bierge_vieta():
-    label_current_method.config(text = "=> Bierge Vieta <=" , fg = 'GREEN')
+    label_current_method.config(text = "=> Bierge Vieta <=  " , fg = 'GREEN')
     additional_entry2.grid_forget()
     global method
     method = 5
 def prepare_false_position():
-    label_current_method.config(text = "=> False Position <=" , fg = 'GREEN')
+    label_current_method.config(text = "=> False Position <=  " , fg = 'GREEN')
     additional_entry2.grid(row=11, column=2, sticky=W)
     global method
     method = 6
 def is_slow():
-    label_current_mode.config(text = "=> Slow Iteration <=" , fg = 'GREEN')
+    label_current_mode.config(text = "=> Slow Iteration <=  " , fg = 'GREEN')
     global mode
     mode = 1
     root.geometry('{}x{}'.format(1100, 800))
@@ -85,17 +131,16 @@ def is_rounding():
     global rounding
     rounding = True
 def on_entry_click(event):
-    """function that gets called whenever entry is clicked"""
     if functionEntry.get() == 'Enter the function':
-        functionEntry.delete(0, "end") # delete all the text in the entry
-        functionEntry.insert(0, '') #Insert blank for user input
+        functionEntry.delete(0, "end")
+        functionEntry.insert(0, '')
         functionEntry.config(fg = 'black')
 def on_focusout(event):
     if functionEntry.get() == '':
         functionEntry.insert(0, 'Enter the function')
         functionEntry.config(fg = 'grey')
 def is_fast():
-    label_current_mode.config(text = "=> Fast Iteration <=" , fg = 'GREEN')
+    label_current_mode.config(text = "=> Fast Iteration <=  " , fg = 'GREEN')
     global mode
     mode = 0
     root.geometry('{}x{}'.format(730, 800))
@@ -105,22 +150,31 @@ def solve():
     initial = float(additional_entry.get())
     if additional_entry2.get() is not "" :
          initial2 = float(additional_entry2.get())
-    solver = EquationSolver(function, 20, 0.00001)
+    # solver = EquationSolver(function, MAX_ITERATIONS, EPSILON_PRESICION)
+    # solver.max_iterations = MAX_ITERATIONS
+    # solver.precision =EPSILON_PRESICION
+    # solver.__init__(function,MAX_ITERATIONS , EPSILON_PRESICION)
     global method
     global mode
     global instance
     if method == 1:
-        instance = NewtonRaphson(function, initial)
-    elif method == 2:
-        instance = FixedPoint(function, initial)
+        instance = NewtonRaphson(function, initial, MAX_ITERATIONS , EPSILON_PRESICION)
+        instance.get_root()
     elif method == 3:
-        instance = Bisection(function, initial, initial2)
+        instance = FixedPoint(function, initial, MAX_ITERATIONS , EPSILON_PRESICION)
+        instance.get_root()
+    elif method == 2:
+        instance = Bisection(function, initial, initial2,MAX_ITERATIONS , EPSILON_PRESICION)
+        instance.get_root()
     elif method == 4:
-        instance = Secant(function, initial, initial2)
+        instance = Secant(function, MAX_ITERATIONS , EPSILON_PRESICION, initial, initial2)
+        instance.start_root_finding()
     elif method == 5:
-        instance = BiergeVieta(function, initial)
+        instance = BiergeVieta(function, initial, MAX_ITERATIONS , EPSILON_PRESICION)
+        instance.get_root()
     elif method == 6:
-        instance = FalsePosition(function, initial, initial2)
+        instance = FalsePosition(function,initial, initial2, MAX_ITERATIONS , EPSILON_PRESICION)
+        instance.get_root()
     height = len(instance.roots)
 
     if(mode == 0) :
@@ -191,17 +245,20 @@ def solve():
         nextIteration()
 def popup():
     w = popupWindow()
-
+def popup2():
+    ww = InterpolationPopUp()
 def createNew() :
     functionEntry.delete(0, 'end')
+    functionEntry.config(fg = "black")
     additional_entry.delete(0, 'end')
     additional_entry2.delete(0, 'end')
-    label_current_method.config(fg = "red", text = "Please select method")
-    label_current_mode.config(fg = "red", text = "please select a mode")
+    label_current_method.config(fg = "brown", text = "Please select method")
+    label_current_mode.config(fg = "brown", text = "please select a mode")
+    root.geometry('{}x{}'.format(730, 800))
+    iterate.grid_forget()
     global table_as_list
     for i in range (0, len(table_as_list)) :
         table_as_list[i].grid_forget()
-
 def nextIteration():
     global glob_i
     global glob_h
@@ -264,10 +321,10 @@ label_init = Label(root, text = "initials",font=("Courier", 15), fg = 'BLUE')
 label_init.grid(row = 0, column = 2, sticky = W)
 
 
-label_current_method = Label(root, text = "Please choose method", font=("Helvetica", 17), fg = 'RED')
+label_current_method = Label(root, text = "Please choose method  ", font=("Helvetica", 17), fg = 'brown')
 label_current_method.grid(row = 7, column  = 2, sticky = E, rowspan = 5)
 
-label_current_mode = Label(root, text = "Please choose a mode", font=("Helvetica", 17), fg = 'RED')
+label_current_mode = Label(root, text = "Please choose a mode  ", font=("Helvetica", 17), fg = 'brown')
 label_current_mode.grid(row = 11, column  = 2, sticky = E, rowspan = 5)
 
 label_enter_function = Label(root, text = "                        ", font=("Courier", 20))
@@ -304,10 +361,10 @@ iterate.grid_forget()
 
 # menus------------------------------------------------------------------------------------------
 
-menu = Menu(root, font=("Helvetica", 20))
+menu = Menu(root, font=("Helvetica", 17), fg = "blue")
 root.config(menu = menu)
-submenu = Menu(menu, font=("Helvetica", 20), borderwidth=2, relief="solid")
-submenu0 = Menu(menu, font=("Helvetica", 20),borderwidth=2, relief="groove")
+submenu = Menu(menu, font=("Helvetica", 18), borderwidth=2, relief="solid")
+submenu0 = Menu(menu, font=("Helvetica", 18),borderwidth=2, relief="groove")
 menu.add_cascade(label = "File | ", menu = submenu0)
 submenu0.add_radiobutton(label = "New" ,command = createNew)
 submenu0.add_radiobutton(label = "Exit" ,command = exit)
@@ -321,22 +378,27 @@ submenu.add_radiobutton(label = "Secant" ,command = prepare_secant)
 submenu.add_radiobutton(label = "Bierge Vieta", command = prepare_bierge_vieta)
 submenu.add_radiobutton(label = "False Position", command = prepare_false_position)
 
-submenu2 = Menu(menu, font=("Helvetica", 20),borderwidth=2, relief="groove")
+submenu2 = Menu(menu, font=("Helvetica", 18),borderwidth=2, relief="groove")
 menu.add_cascade(label = "Mode | ", menu = submenu2)
 submenu2.add_radiobutton(label = "Slow" ,command = is_slow)
 submenu2.add_radiobutton(label = "Fast" ,command = is_fast)
 
 
-submenu3 = Menu(menu, font=("Helvetica", 20),borderwidth=2, relief="groove")
+submenu3 = Menu(menu, font=("Helvetica", 18),borderwidth=2, relief="groove")
 menu.add_cascade(label = "Approximation | ", menu = submenu3)
 submenu3.add_radiobutton(label = "Rounding" ,command = is_rounding)
 submenu3.add_radiobutton(label = "Chopping" ,command = is_chopping)
 
-submenu4 = Menu(menu, font=("Helvetica", 20),borderwidth=2, relief="groove")
-menu.add_cascade(label = "Constants", menu = submenu4)
+submenu4 = Menu(menu, font=("Helvetica", 18),borderwidth=2, relief="groove")
+menu.add_cascade(label = "Constants | ", menu = submenu4)
 submenu4.add_radiobutton(label = "Precision" ,command = popup)
 submenu4.add_radiobutton(label = "Maximum Iteration" ,command = popup)
 submenu4.add_radiobutton(label = "Segnificant Figures" ,command = popup)
+
+submenu5 = Menu(menu, font=("Helvetica", 18),borderwidth=2, relief="groove")
+menu.add_cascade(label = "Interpolation", menu = submenu5)
+submenu5.add_radiobutton(label = "new" ,command = popup2)
+
 
 
 frame = Frame(root)

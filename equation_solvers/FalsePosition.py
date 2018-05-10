@@ -11,17 +11,18 @@ class FalsePosition(EquationSolver):
 
     # Add suitable args
     def __init__(self, equation, initial_lower_bound=DEFAULT_INITIAL_LOWER_BOUND,
-                 initial_upper_bound=DEFAULT_INITIAL_UPPER_BOUND):
+                 initial_upper_bound=DEFAULT_INITIAL_UPPER_BOUND ,max_iterations = EquationSolver.DEFAULT_MAX_ITERATIONS , precision = EquationSolver.DEFAULT_EPSILON):
         super().__init__(equation)
         self.lower_bound = initial_lower_bound
         self.upper_bound = initial_upper_bound
-        self.getRoot()
+        self.max_iterations = max_iterations
+        self.precision = precision
     def getRoot(self):
         root = 0
         eq = 0
         first_iteration = True
-        fxl = super().evaluate_equation(self.lower_bound)
-        fxu = super().evaluate_equation(self.upper_bound)
+        fxl = self.evaluate_equation(self.lower_bound)
+        fxu = self.evaluate_equation(self.upper_bound)
         if fxl * fxu > 0 :
             print("no bracket")
             return 0
