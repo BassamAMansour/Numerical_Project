@@ -1,45 +1,43 @@
-import os
-import tkinter
 from doctest import master
 from tkinter import *
-from tkinter.filedialog import FileDialog
-from tkinter.font import BOLD
-
-from gi.overrides.Gtk import Gtk
-from six import b
 from sympy import simplify
-
 from GUI.Plots.Plotter import Plotter
 from Interpolatin import Newton
 from Interpolation import LagrangeInterpolation
 from Interpolation.Reader import Reader
-from equation_solvers.EquationSolver import EquationSolver
 from equation_solvers.FalsePosition import FalsePosition
 from equation_solvers.FixedPoint import FixedPoint
 from equation_solvers.NewtonRaphson import NewtonRaphson
-from equation_solvers.Root import Root
 from equation_solvers.Secant import Secant
 from equation_solvers.BiergeVieta import BiergeVieta
 from equation_solvers.Bisection import Bisection
 from tkinter import filedialog as fd
 
+#GLobals -----------------------------------------------------------------------------------
+
+MAX_ITERATIONS = 49
+EPSILON_PRESICION = 0.0001
+
 rounding = True
+lagrange = False
+
 globalValue = 0
 method = 0
 mode = 0
+globalInterpolation = 0
 instance = 0
 glob_i = 0
 glob_h = 0
 round_to = 6
+
 table_as_list = []
-MAX_ITERATIONS = 49
-EPSILON_PRESICION = 0.0001
-globalInterpolation = 0
 x_labels_as_list = []
 fx_labels_as_list = []
 x_list = []
 fx_list = []
-lagrange = False
+
+#Classes ------------------------------------------------------------------------------------
+
 class InterpolationWindow():
     lblfunc = 0
     lblfuncSimp = 0
@@ -73,10 +71,16 @@ class InterpolationWindow():
 
     function_from_interpolation = ""
     def prepare_interpolation_sets(self):
-        for i in range (0, len(x_labels_as_list)) :
-            x_list.append(float(x_labels_as_list[i].get()))
-        for i in range (0, len(fx_labels_as_list)) :
-            fx_list.append(float(fx_labels_as_list[i].get()))
+        if (len(x_list) > 0):
+            for i in range(0, len(x_list)):
+                x_labels_as_list[i].insert(0,x_list[i])
+            for i in range(0, len(fx_list)):
+                fx_labels_as_list[i].insert(0,fx_list[i])
+        else:
+            for i in range (0, len(x_labels_as_list)) :
+                x_list.append(float(x_labels_as_list[i].get()))
+            for i in range (0, len(fx_labels_as_list)) :
+                fx_list.append(float(fx_labels_as_list[i].get()))
         global function_from_interpolation
         if(lagrange == False) :
             fn = Newton(x_list,fx_list)
@@ -175,6 +179,17 @@ def import_from_file():
     additional_entry.insert(0, r.initial_1)
     if(r.initial_2 != None) :
         additional_entry2.insert(0, r.initial_2)
+def import_from_file_interpolation():
+    file = fd.askopenfile(parent=root, mode='rb', title='Choose a file for interpolation')
+    global x_list
+    global fx_list
+    global globalInterpolation
+    r = Reader()
+    r.read_interpolation(file.name)
+    globalInterpolation = r.interpolation_order
+    x_list = r.x_list
+    fx_list = r.fx_list
+    w = InterpolationWindow()
 def prepare_newton():
     label_current_method.config(text = "=> Newton Raphson <=  " , fg = 'GREEN')
     additional_entry2.grid_forget()
@@ -397,6 +412,8 @@ def nextIteration():
         table_as_list.append(b)
         glob_i += 1
 
+#initiallizing.............................................................................................
+
 root = Tk()
 root.title('Numerical Analysis')
 root.grid_rowconfigure(0, weight=1)
@@ -484,7 +501,6 @@ menu.add_cascade(label = "Mode | ", menu = submenu2)
 submenu2.add_radiobutton(label = "Slow" ,command = is_slow)
 submenu2.add_radiobutton(label = "Fast" ,command = is_fast)
 
-
 submenu3 = Menu(menu, font=("Helvetica", 18),borderwidth=2, relief="groove")
 menu.add_cascade(label = "Approximation | ", menu = submenu3)
 submenu3.add_radiobutton(label = "Rounding" ,command = is_rounding)
@@ -498,10 +514,9 @@ submenu4.add_radiobutton(label = "Segnificant Figures" ,command = popup)
 
 submenu5 = Menu(menu, font=("Helvetica", 18),borderwidth=2, relief="groove")
 menu.add_cascade(label = "Interpolation", menu = submenu5)
+submenu5.add_radiobutton(label = "Import from file" ,command = import_from_file_interpolation)
 submenu5.add_radiobutton(label = "Newton's Interpolation" ,command = popup2)
 submenu5.add_radiobutton(label = "Lagrange Interpolation" ,command = popup3)
-
-
 
 frame = Frame(root)
 frame.grid(sticky = W, row = 20, columnspan = 6)
