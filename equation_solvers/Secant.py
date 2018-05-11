@@ -16,8 +16,11 @@ class Secant(EquationSolver):
 
     def start_root_finding(self):
 
-        self.add_root(Root(self.calculate_root(self.first_initial_point, self.second_initial_point), None))
-
+        #self.add_root(Root(self.calculate_root(self.first_initial_point, self.second_initial_point), None))
+        temp_root = Root (self.second_initial_point,0)
+        self.roots.append(temp_root)
+        temp_root = Root (self.first_initial_point,0)
+        self.roots.append(temp_root)
         old_root = self.second_initial_point
         current_root = self.roots[-1].root
         new_root = self.calculate_root(old_root, current_root)
@@ -36,14 +39,14 @@ class Secant(EquationSolver):
                 current_root = self.roots[-1].root
                 new_root = self.calculate_root(old_root, current_root)
                 new_precision = self.calculate_precision(current_root, new_root)
-
                 self.add_root(Root(new_root, new_precision))
+                counter += 1
 
             if self.roots[-1].precision <= self.precision:
                 self.root_found = True
 
-    def calculate_root(self, old_root, new_root) -> float:
+    def calculate_root(self, old_root, current_root) -> float:
         old_value = self.evaluate_equation(old_root)
-        new_value = self.evaluate_equation(new_root)
-        return (new_root - (new_value * ((new_root - old_root) / (
+        new_value = self.evaluate_equation(current_root)
+        return (current_root - (new_value * ((current_root - old_root) / (
                 new_value - old_value))))

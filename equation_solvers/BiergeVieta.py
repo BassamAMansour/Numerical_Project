@@ -47,7 +47,7 @@ class BiergeVieta(EquationSolver):
     def get_coeffs(self):
         x = Symbol("x")
         a = Poly(self.equation, x)
-        l = a.coeffs()
+        l = a.all_coeffs()
         return l
 
 
