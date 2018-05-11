@@ -1,4 +1,7 @@
 class Reader:
+    x_list = []
+    fx_list = []
+    interpolation_order = 0
     operation = 0
     equation = ""
     initial_1 = None
