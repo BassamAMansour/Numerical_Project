@@ -27,16 +27,20 @@ allowed_words = [
     'exp',
 ]
 
-MODE_SLOW = 0
-MODE_FAST = 1
+MODE_SLOW = 1
+MODE_FAST = 0
 DEFAULT_MODE = MODE_FAST
 HORIZONTAL_PADDING = 1.1
 
 
 class Plotter:
-    def __init__(self, equation: str, roots_list: list, mode=DEFAULT_MODE):
+    def __init__(self, equation: str, roots_list: list, mode):
+        print(mode)
+        self.mode = DEFAULT_MODE
+        print(self.mode)
         self.equation = equation
         self.mode = mode
+        print(self.mode)
         self.roots_list = roots_list
         self.modified_expression = self.compute_modified_expression()
 
@@ -56,6 +60,7 @@ class Plotter:
     def plot_equation(self):
         max = self.get_max_root()
         min = self.get_min_root()
+        max = max +((min+max)/2)
 
         x = np.linspace(int(min * HORIZONTAL_PADDING), int(max * HORIZONTAL_PADDING), 500)
         y = eval(self.modified_expression)
@@ -83,31 +88,28 @@ class Plotter:
         plt.show()
 
     def plot_graph_in_slow_mode(self, x, y):
-        figure = plt.figure()
-        figure.canvas.mpl_connect('button_press_event', self.on_click)
-        self.x = x
-        self.y = y
-        plt.plot()
-
         self.current_root_index = 0
-
-        equation_line, = plt.plot(x, y)
-
-        precision = self.roots_list[self.current_root_index].precision
-        if not (precision is None):
-            precision = precision * 100
-
-        plt.title(
-            "Equation: " + self.equation.__str__() + "\n" +
-            "Root = " + self.roots_list[self.current_root_index].root.__str__() + "\n" +
-            "Ea = " + precision.__str__() + "%" + " | " +
-            "Iteration = " + str(self.current_root_index + 1))
-
-        plt.axvline(x=self.roots_list[self.current_root_index].root)
-        plt.axhline(y=0)
-        plt.grid()
-
-        plt.show()
+        for root in self.roots_list:
+            figure = plt.figure()
+            figure.canvas.mpl_connect('button_press_event', self.on_click)
+            self.x = x
+            self.y = y
+            plt.plot()
+            equation_line, = plt.plot(x, y)
+            precision = root.precision
+            if not (precision is None):
+                precision = precision * 100
+            plt.title(
+                "Equation: " + self.equation.__str__() + "\n" +
+                "Root = " + root.root.__str__() + "\n" +
+                "Ea = " + precision.__str__() + "%" + " | " +
+                "Iteration = " + str(self.current_root_index + 1))
+            plt.axvline(x=root.root)
+            plt.axhline(y=0)
+            plt.grid()
+            plt.show()
+            figure.savefig("root" +str(self.current_root_index)+ ".png")
+            self.current_root_index +=1
 
     def on_click(self, event):
         event.canvas.figure.clear()
