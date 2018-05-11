@@ -1,4 +1,7 @@
 class Reader:
+    x_list = []
+    fx_list = []
+    interpolation_order = 0
     operation = 0
     equation = ""
     initial_1 = None
@@ -17,12 +20,12 @@ class Reader:
             interval = interval.replace("[", "")
             interval = interval.replace("]", "")
             self.initial_1 = float(interval.strip().split(" ")[0])
-            self.intial_2 = float(interval.strip().split(" ")[1])
+            self.initial_2 = float(interval.strip().split(" ")[1])
 
         else:
             self.initial_1 = float(interval.strip())
 
         if (len(content) > 3):
-            self.tolerance = content[3].rstrip().strip()
+            self.tolerance = float(content[3].rstrip().strip())
         if (len(content) > 4):
-            self.max_iterations = content[4].rstrip().strip()
+            self.max_iterations = int(content[4].rstrip().strip())
