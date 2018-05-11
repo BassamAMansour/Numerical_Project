@@ -5,7 +5,7 @@ from tkinter.font import BOLD
 
 from six import b
 
-
+from GUI.Plots.Plotter import Plotter
 from equation_solvers.EquationSolver import EquationSolver
 from equation_solvers.FalsePosition import FalsePosition
 from equation_solvers.FixedPoint import FixedPoint
@@ -244,6 +244,9 @@ def solve():
                     b = Label(frame_labels,borderwidth=2, relief="groove", text= p , font=("Courier", 12), width=15, fg="BLUE", bg="white")
                     b.grid(sticky='news', row=i + 1-f, column=j + 1+g)
                     table_as_list.append(b)
+        plot = Plotter(function,instance.roots,0)
+        plot.plot_equation()
+
     else :
         b = Label(frame_labels, borderwidth=2, relief="solid", text="i", font=("Courier", 12), width=5, fg="RED",
                   bg="YELLOW")
@@ -260,6 +263,8 @@ def solve():
         global glob_i, glob_h
         glob_i = 0
         glob_h = height
+        plot = Plotter(function, instance.roots, 1)
+        plot.plot_equation()
         nextIteration()
 def popup():
     w = popupWindow()
