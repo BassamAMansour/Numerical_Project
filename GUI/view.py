@@ -1,13 +1,18 @@
+import os
 import tkinter
 from doctest import master
 from tkinter import *
+from tkinter.filedialog import FileDialog
 from tkinter.font import BOLD
 
+from gi.overrides.Gtk import Gtk
 from six import b
 from sympy import simplify
 
 from GUI.Plots.Plotter import Plotter
 from Interpolatin import Newton
+from Interpolation import LagrangeInterpolation
+from Interpolation.Reader import Reader
 from equation_solvers.EquationSolver import EquationSolver
 from equation_solvers.FalsePosition import FalsePosition
 from equation_solvers.FixedPoint import FixedPoint
@@ -16,6 +21,7 @@ from equation_solvers.Root import Root
 from equation_solvers.Secant import Secant
 from equation_solvers.BiergeVieta import BiergeVieta
 from equation_solvers.Bisection import Bisection
+from tkinter import filedialog as fd
 
 rounding = True
 globalValue = 0
@@ -33,6 +39,7 @@ x_labels_as_list = []
 fx_labels_as_list = []
 x_list = []
 fx_list = []
+lagrange = False
 class InterpolationWindow():
     lblfunc = 0
     lblfuncSimp = 0
@@ -70,9 +77,13 @@ class InterpolationWindow():
             x_list.append(float(x_labels_as_list[i].get()))
         for i in range (0, len(fx_labels_as_list)) :
             fx_list.append(float(fx_labels_as_list[i].get()))
-        fn = Newton(x_list,fx_list)
         global function_from_interpolation
-        function_from_interpolation = fn.get_function()
+        if(lagrange == False) :
+            fn = Newton(x_list,fx_list)
+            function_from_interpolation = fn.get_function()
+        else :
+            fn = LagrangeInterpolation()
+            function_from_interpolation = fn.getFunction(x_list,fx_list)
         self.lblFunc.config(text=function_from_interpolation)
         function_from_interpolation = simplify(function_from_interpolation)
         s1 = 'F(x) = '
@@ -80,8 +91,6 @@ class InterpolationWindow():
         s3 = str(s1 + s2)
         print(s3)
         self.lblFuncSimp.config(text = s3 )
-
-
 class InterpolationPopUp():
     def __init__(self):
         top=self.top=Toplevel(master)
@@ -102,8 +111,6 @@ class InterpolationPopUp():
         globalInterpolation = int(self.e.get()) + 1
         self.top.destroy()
         i = InterpolationWindow()
-
-
 class popupWindow():
     def __init__(self):
         top=self.top=Toplevel(master)
@@ -137,6 +144,37 @@ class popupWindow():
         self.top.destroy()
 
 # Functions ---------------------------------------------------------------------------------
+def import_from_file():
+    file = fd.askopenfile(parent=root, mode='rb', title='Choose a file')
+    print(file.name)
+    r = Reader()
+    r.read(file.name)
+    global MAX_ITERATIONS
+    global EPSILON_PRESICION
+    global method
+    method = r.operation
+    if method == 1:
+        prepare_newton()
+    elif method == 2:
+        prepare_bisection()
+    elif method == 3:
+        prepare_fixed_point()
+    elif method == 4:
+        prepare_secant()
+    elif method == 5:
+        prepare_bierge_vieta()
+    elif method == 6:
+        prepare_false_position()
+    MAX_ITERATIONS = r.max_iterations
+    EPSILON_PRESICION = r.tolerance
+    functionEntry.delete(0, 'end')
+    functionEntry.config(fg = "black")
+    additional_entry.delete(0, 'end')
+    additional_entry2.delete(0, 'end')
+    functionEntry.insert(0, r.equation)
+    additional_entry.insert(0, r.initial_1)
+    if(r.initial_2 != None) :
+        additional_entry2.insert(0, r.initial_2)
 def prepare_newton():
     label_current_method.config(text = "=> Newton Raphson <=  " , fg = 'GREEN')
     additional_entry2.grid_forget()
@@ -167,6 +205,11 @@ def prepare_false_position():
     additional_entry2.grid(row=11, column=2, sticky=W)
     global method
     method = 6
+def prepare_general_algorithm():
+    label_current_method.config(text = "=> General Algorithm <=  " , fg = 'GREEN')
+    additional_entry2.grid(row=11, column=2, sticky=W)
+    global method
+    method = 7
 def is_slow():
     label_current_mode.config(text = "=> Slow Iteration <=  " , fg = 'GREEN')
     global mode
@@ -199,10 +242,6 @@ def solve():
     initial = float(additional_entry.get())
     if additional_entry2.get() is not "" :
          initial2 = float(additional_entry2.get())
-    # solver = EquationSolver(function, MAX_ITERATIONS, EPSILON_PRESICION)
-    # solver.max_iterations = MAX_ITERATIONS
-    # solver.precision =EPSILON_PRESICION
-    # solver.__init__(function,MAX_ITERATIONS , EPSILON_PRESICION)
     global method
     global mode
     global instance
@@ -298,9 +337,15 @@ def solve():
         plot.plot_equation()
         nextIteration()
 def popup():
-    w = popupWindow()
+    w1 = popupWindow()
 def popup2():
-    ww = InterpolationPopUp()
+    global lagrange
+    w2 = InterpolationPopUp()
+    lagrange = False
+def popup3():
+    global lagrange
+    lagrange = True
+    w3 = InterpolationPopUp()
 def createNew() :
     functionEntry.delete(0, 'end')
     functionEntry.config(fg = "black")
@@ -420,6 +465,7 @@ root.config(menu = menu)
 submenu = Menu(menu, font=("Helvetica", 18), borderwidth=2, relief="solid")
 submenu0 = Menu(menu, font=("Helvetica", 18),borderwidth=2, relief="groove")
 menu.add_cascade(label = "File | ", menu = submenu0)
+submenu0.add_radiobutton(label = "Import" ,command = import_from_file)
 submenu0.add_radiobutton(label = "New" ,command = createNew)
 submenu0.add_radiobutton(label = "Exit" ,command = exit)
 
@@ -431,6 +477,7 @@ submenu.add_radiobutton(label = "Bisection" ,command = prepare_bisection)
 submenu.add_radiobutton(label = "Secant" ,command = prepare_secant)
 submenu.add_radiobutton(label = "Bierge Vieta", command = prepare_bierge_vieta)
 submenu.add_radiobutton(label = "False Position", command = prepare_false_position)
+submenu.add_radiobutton(label = "General Algorithm", command = prepare_general_algorithm)
 
 submenu2 = Menu(menu, font=("Helvetica", 18),borderwidth=2, relief="groove")
 menu.add_cascade(label = "Mode | ", menu = submenu2)
@@ -451,7 +498,8 @@ submenu4.add_radiobutton(label = "Segnificant Figures" ,command = popup)
 
 submenu5 = Menu(menu, font=("Helvetica", 18),borderwidth=2, relief="groove")
 menu.add_cascade(label = "Interpolation", menu = submenu5)
-submenu5.add_radiobutton(label = "new" ,command = popup2)
+submenu5.add_radiobutton(label = "Newton's Interpolation" ,command = popup2)
+submenu5.add_radiobutton(label = "Lagrange Interpolation" ,command = popup3)
 
 
 
