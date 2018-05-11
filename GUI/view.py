@@ -7,6 +7,7 @@ from Interpolation import LagrangeInterpolation
 from Interpolation.Reader import Reader
 from equation_solvers.FalsePosition import FalsePosition
 from equation_solvers.FixedPoint import FixedPoint
+from equation_solvers.General_Algorithm import General_Algorithm
 from equation_solvers.NewtonRaphson import NewtonRaphson
 from equation_solvers.Secant import Secant
 from equation_solvers.BiergeVieta import BiergeVieta
@@ -68,14 +69,19 @@ class InterpolationWindow():
 
         self.lblFuncSimp = Label(root2, text="", font=("Helvetica", 15), fg="blue")
         self.lblFuncSimp.grid(row=4, column=0, columnspan=50)
+        if (len(x_list) > 0):
+            for i in range(0, len(x_list)):
+                x_labels_as_list[i].insert(0, x_list[i])
+            for i in range(0, len(fx_list)):
+                fx_labels_as_list[i].insert(0, fx_list[i])
 
     function_from_interpolation = ""
     def prepare_interpolation_sets(self):
         if (len(x_list) > 0):
             for i in range(0, len(x_list)):
-                x_labels_as_list[i].insert(0,x_list[i])
+                x_labels_as_list[i].insert(0, x_list[i])
             for i in range(0, len(fx_list)):
-                fx_labels_as_list[i].insert(0,fx_list[i])
+                fx_labels_as_list[i].insert(0, fx_list[i])
         else:
             for i in range (0, len(x_labels_as_list)) :
                 x_list.append(float(x_labels_as_list[i].get()))
@@ -187,8 +193,12 @@ def import_from_file_interpolation():
     global lagrange
     r = Reader()
     r.read_interpolation(file.name)
-    globalInterpolation = r.interpolation_order
-    lagrange = r.operation_interpolation
+    globalInterpolation = r.interpolation_order + 1
+    l = r.operation_interpolation
+    if l == 2 :
+        lagrange = True
+    if l == 1 :
+        lagrange = False
     x_list = r.x_list
     fx_list = r.fx_list
     w = InterpolationWindow()
@@ -257,32 +267,37 @@ def is_fast():
 def solve():
     function = functionEntry.get()
     initial = float(additional_entry.get())
-    if additional_entry2.get() is not "" :
-         initial2 = float(additional_entry2.get())
+    initial2 = 0
     global method
-    global mode
     global instance
-    if method == 1:
-        instance = NewtonRaphson(function, initial, MAX_ITERATIONS , EPSILON_PRESICION)
-        instance.get_root()
-    elif method == 3:
-        instance = FixedPoint(function, initial, MAX_ITERATIONS , EPSILON_PRESICION)
-        instance.get_root()
-    elif method == 2:
-        instance = Bisection(function, initial, initial2,MAX_ITERATIONS , EPSILON_PRESICION)
-        instance.get_root()
-    elif method == 4:
-        instance = Secant(function, MAX_ITERATIONS , EPSILON_PRESICION, initial, initial2)
-        instance.start_root_finding()
-    elif method == 5:
-        instance = BiergeVieta(function, initial, MAX_ITERATIONS , EPSILON_PRESICION)
-        instance.get_root()
-    elif method == 6:
-        instance = FalsePosition(function,initial, initial2, MAX_ITERATIONS , EPSILON_PRESICION)
-        instance.get_root()
-    height = len(instance.roots)
+    if additional_entry2.get() is not "":
+        initial2 = float(additional_entry2.get())
+    if method == 7 :
+        instance = General_Algorithm(function , MAX_ITERATIONS , EPSILON_PRESICION)
+        instance.solve_equation(initial , initial2)
+    else :
+        global mode
+        if method == 1:
+            instance = NewtonRaphson(function, initial, MAX_ITERATIONS , EPSILON_PRESICION)
+            instance.get_root()
+        elif method == 3:
+            instance = FixedPoint(function, initial, MAX_ITERATIONS , EPSILON_PRESICION)
+            instance.get_root()
+        elif method == 2:
+            instance = Bisection(function, initial, initial2,MAX_ITERATIONS , EPSILON_PRESICION)
+            instance.get_root()
+        elif method == 4:
+            instance = Secant(function, MAX_ITERATIONS , EPSILON_PRESICION, initial, initial2)
+            instance.start_root_finding()
+        elif method == 5:
+            instance = BiergeVieta(function, initial, MAX_ITERATIONS , EPSILON_PRESICION)
+            instance.get_root()
+        elif method == 6:
+            instance = FalsePosition(function,initial, initial2, MAX_ITERATIONS , EPSILON_PRESICION)
+            instance.get_root()
 
     if(mode == 0) :
+        height = len(instance.roots)
         b = Label(frame_labels, borderwidth=2, relief="solid", text="i", font=("Courier", 12), width=5, fg="RED",
                   bg="YELLOW")
         b.grid(sticky='news', row=0, column=0)
@@ -295,7 +310,6 @@ def solve():
         table_as_list.append(b)
         width = 2
         global round_to
-
         for i in range(0, height):  # Rows
             f = 0
             g = 0
@@ -335,6 +349,7 @@ def solve():
         plot.plot_equation()
 
     else :
+        height = len(instance.roots)
         b = Label(frame_labels, borderwidth=2, relief="solid", text="i", font=("Courier", 12), width=5, fg="RED",
                   bg="YELLOW")
         b.grid(sticky='news', row=0, column=0)

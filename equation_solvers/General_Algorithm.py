@@ -3,7 +3,8 @@ from symtable import Symbol
 import numpy
 from sympy import Poly, simplify
 
-from equation_solvers import FalsePosition, Bisection
+from equation_solvers import FalsePosition
+from equation_solvers.Bisection import Bisection
 from equation_solvers.EquationSolver import EquationSolver
 from equation_solvers.Root import Root
 from equation_solvers.Secant import Secant
@@ -23,7 +24,7 @@ class General_Algorithm(EquationSolver):
         self.precision = precision
         self.equation = equation
 
-    def solve_polynomial(self, initial_1, initial_2):
+    def solve_equation(self, initial_1, initial_2):
         self.initial_1 = initial_1
         self.initial_2 = initial_2
         difference = abs(self.initial_2 - self.initial_1)
@@ -31,11 +32,11 @@ class General_Algorithm(EquationSolver):
             difference *= 10
         interval = numpy.linspace(self.initial_1, self.initial_2, difference * self.CONSTANT, True)
         for i in range(0, len(interval) - 1):
-            bisection = Bisection(self.equation, interval[i], interval[i + 1])
-            root = bisection.get_root()
+            bisection_method = Bisection(self.equation, interval[i], interval[i + 1])
+            root = bisection_method.get_root()
             if root is not None:
-                if bisection.root_found :
-                    root = bisection.roots[-1]
+                if bisection_method.root_found :
+                    root = bisection_method.roots[-1]
                 if not self.exist(root):
                     self.add_root(root)
 

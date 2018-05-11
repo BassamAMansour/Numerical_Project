@@ -16,6 +16,7 @@ replacements = {
     'exp': 'np.exp',
     'sqrt': 'np.sqrt',
     '^': '**',
+    'log': 'np.log'
 }
 
 allowed_words = [
@@ -25,6 +26,7 @@ allowed_words = [
     'tan',
     'sqrt',
     'exp',
+    'log'
 ]
 
 MODE_SLOW = 1
