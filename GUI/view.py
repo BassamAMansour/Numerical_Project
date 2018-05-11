@@ -4,8 +4,10 @@ from tkinter import *
 from tkinter.font import BOLD
 
 from six import b
+from sympy import simplify
 
 from GUI.Plots.Plotter import Plotter
+from Interpolatin import Newton
 from equation_solvers.EquationSolver import EquationSolver
 from equation_solvers.FalsePosition import FalsePosition
 from equation_solvers.FixedPoint import FixedPoint
@@ -27,8 +29,13 @@ table_as_list = []
 MAX_ITERATIONS = 49
 EPSILON_PRESICION = 0.0001
 globalInterpolation = 0
-
+x_labels_as_list = []
+fx_labels_as_list = []
+x_list = []
+fx_list = []
 class InterpolationWindow():
+    lblfunc = 0
+    lblfuncSimp = 0
     def __init__(self):
         root2 = Tk()
         ws = root.winfo_screenwidth()
@@ -44,11 +51,35 @@ class InterpolationWindow():
         for i in range (0, globalInterpolation) :
             b = Entry(root2, font=("Helvetica", 20), borderwidth=2, relief="groove", width = 8 )
             b.grid(row = 0, column = i + 1)
+            x_labels_as_list.append(b)
         for i in range (0, globalInterpolation) :
             b = Entry(root2, font=("Helvetica", 20), borderwidth=2, relief="groove", width = 8 )
             b.grid(row = 1, column = i + 1)
-        btn = Button(root2, text = "get function وان", width = str(globalInterpolation*17),borderwidth=2, relief="groove")
+            fx_labels_as_list.append(b)
+        btn = Button(root2, text = "get function وان", width = str(globalInterpolation*17),borderwidth=2, relief="groove", command = self.prepare_interpolation_sets)
         btn.grid(row = 2, columnspan = globalInterpolation+1)
+        self.lblFunc = Label(root2, text="", font=("Helvetica", 9), fg = "black")
+        self.lblFunc.grid(row=3, column=0, columnspan=50)
+
+        self.lblFuncSimp = Label(root2, text="", font=("Helvetica", 15), fg="blue")
+        self.lblFuncSimp.grid(row=4, column=0, columnspan=50)
+
+    function_from_interpolation = ""
+    def prepare_interpolation_sets(self):
+        for i in range (0, len(x_labels_as_list)) :
+            x_list.append(float(x_labels_as_list[i].get()))
+        for i in range (0, len(fx_labels_as_list)) :
+            fx_list.append(float(fx_labels_as_list[i].get()))
+        fn = Newton(x_list,fx_list)
+        global function_from_interpolation
+        function_from_interpolation = fn.get_function()
+        self.lblFunc.config(text=function_from_interpolation)
+        function_from_interpolation = simplify(function_from_interpolation)
+        s1 = 'F(x) = '
+        s2 = str(function_from_interpolation)
+        s3 = str(s1 + s2)
+        print(s3)
+        self.lblFuncSimp.config(text = s3 )
 
 
 class InterpolationPopUp():
