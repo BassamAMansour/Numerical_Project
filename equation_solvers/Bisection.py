@@ -22,8 +22,8 @@ class Bisection(EquationSolver):
         root = 0
         first_iteration = True
         ea= 0
-        fxl = super().evaluate_equation( self.lower_bound)
-        fxu = super().evaluate_equation(self.upper_bound)
+        fxl = self.evaluate_equation( self.lower_bound)
+        fxu = self.evaluate_equation(self.upper_bound)
         if fxl * fxu > 0 :
             print("no bracket")
             return None
@@ -33,7 +33,7 @@ class Bisection(EquationSolver):
                 ea = None
             else:
                 ea = abs((root - self.roots[-1].root)/ root)
-            check = super().evaluate_equation(self.lower_bound) *super().evaluate_equation(root)
+            check = self.evaluate_equation(self.lower_bound) *self.evaluate_equation(root)
             if check < 0 :
                 self.upper_bound = root
             elif check > 0 :

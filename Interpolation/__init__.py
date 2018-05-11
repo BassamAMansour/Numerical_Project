@@ -8,8 +8,7 @@ from Interpolation.LagrangeInterpolation import LagrangeInterpolation
 # interpolation = LagrangeInterpolation()
 # string = interpolation.getFunction(points, functions)
 # print(string)
-string = "2*x**2 + 3*x - 2"
-string = str(simplify(string))
+string = '2*x**2 + 3*x - 2'
 a = Poly(string , Symbol("x"))
 print(a.coeffs())
 print(simplify(str(string)).subs("t", 15).evalf())

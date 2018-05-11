@@ -3,14 +3,9 @@ import string
 from sympy import simplify
 
 
+class LagrangeInterpolation:
 
-
-
-class LagrangeInterpolation :
-
-
-
-    def getFunction(self ,points, functions):
+    def getFunction(self, points, functions):
         equation = ""
         for i in range(len(points)):
             sub_equation = "1"
@@ -21,5 +16,5 @@ class LagrangeInterpolation :
                     sub_equation += " * ((x - " + str(x) + ")/(" + str(y) + " - " + str(x) + "))"
                     sub_equation = str(sub_equation)
             sub_equation += "* " + str(functions[i])
-            equation += "+"+ str(sub_equation)
+            equation += "+" + str(sub_equation)
         return equation
