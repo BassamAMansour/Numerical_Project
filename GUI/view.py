@@ -451,7 +451,8 @@ submenu4.add_radiobutton(label = "Segnificant Figures" ,command = popup)
 
 submenu5 = Menu(menu, font=("Helvetica", 18),borderwidth=2, relief="groove")
 menu.add_cascade(label = "Interpolation", menu = submenu5)
-submenu5.add_radiobutton(label = "new" ,command = popup2)
+submenu5.add_radiobutton(label = "Newton's Interpolation" ,command = popup2)
+submenu5.add_radiobutton(label = "Newton's Interpolation" ,command = popup2)
 
 
 
