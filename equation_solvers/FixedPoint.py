@@ -4,20 +4,22 @@ from equation_solvers.Root import Root
 
 class FixedPoint(EquationSolver):
     UPPER_BOUND = 1000000
-
+    initial_root = 0.0
     # Add suitable args
-    def __init__(self, equation, intial_root):
+    def __init__(self, equation, initial_root, max_iterations = EquationSolver.DEFAULT_MAX_ITERATIONS , precision = EquationSolver.DEFAULT_EPSILON):
         super().__init__(equation)
         self.equation = equation + "+ x"
-        self.get_root(intial_root)
+        self.max_iterations = max_iterations
+        self.precision = precision
+        self.initial_root = initial_root
 
-    def get_root(self, intial_root):
+    def get_root(self):
         diverge = False
-        converge = abs(self.get_first_derivative(self.equation, intial_root))
+        converge = abs(self.get_first_derivative(self.equation, self.initial_root))
         if converge > 1:
             diverge = True
         current_iteration = 0
-        self.roots.append(Root(intial_root, self.UPPER_BOUND))
+        self.roots.append(Root(self.initial_root, self.UPPER_BOUND))
         while (current_iteration < self.max_iterations and
                self.roots[-1].precision > self.precision):
             old_root = self.roots[-1]
