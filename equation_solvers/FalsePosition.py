@@ -24,7 +24,7 @@ class FalsePosition(EquationSolver):
         fxu = super().evaluate_equation(self.upper_bound)
         if fxl * fxu > 0 :
             print("no bracket")
-            return 0
+            return None
 
         for i in range(0, self.max_iterations):
             fxl = super().evaluate_equation(self.lower_bound)
