@@ -18,7 +18,7 @@ class FalsePosition(EquationSolver):
         self.max_iterations = max_iterations
         self.precision = precision
 
-    def getRoot(self):
+    def get_root(self):
         root = 0
         eq = 0
         first_iteration = True
