@@ -8,6 +8,7 @@ from sympy import simplify
 
 from GUI.Plots.Plotter import Plotter
 from Interpolatin import Newton
+from Interpolation import LagrangeInterpolation
 from equation_solvers.EquationSolver import EquationSolver
 from equation_solvers.FalsePosition import FalsePosition
 from equation_solvers.FixedPoint import FixedPoint
@@ -33,6 +34,7 @@ x_labels_as_list = []
 fx_labels_as_list = []
 x_list = []
 fx_list = []
+lagrange = False
 class InterpolationWindow():
     lblfunc = 0
     lblfuncSimp = 0
@@ -70,9 +72,13 @@ class InterpolationWindow():
             x_list.append(float(x_labels_as_list[i].get()))
         for i in range (0, len(fx_labels_as_list)) :
             fx_list.append(float(fx_labels_as_list[i].get()))
-        fn = Newton(x_list,fx_list)
         global function_from_interpolation
-        function_from_interpolation = fn.get_function()
+        if(lagrange == False) :
+            fn = Newton(x_list,fx_list)
+            function_from_interpolation = fn.get_function()
+        else :
+            fn = LagrangeInterpolation()
+            function_from_interpolation = fn.getFunction(x_list,fx_list)
         self.lblFunc.config(text=function_from_interpolation)
         function_from_interpolation = simplify(function_from_interpolation)
         s1 = 'F(x) = '
@@ -298,9 +304,15 @@ def solve():
         plot.plot_equation()
         nextIteration()
 def popup():
-    w = popupWindow()
+    w1 = popupWindow()
 def popup2():
-    ww = InterpolationPopUp()
+    global lagrange
+    w2 = InterpolationPopUp()
+    lagrange = False
+def popup3():
+    global lagrange
+    lagrange = True
+    w3 = InterpolationPopUp()
 def createNew() :
     functionEntry.delete(0, 'end')
     functionEntry.config(fg = "black")
@@ -451,7 +463,8 @@ submenu4.add_radiobutton(label = "Segnificant Figures" ,command = popup)
 
 submenu5 = Menu(menu, font=("Helvetica", 18),borderwidth=2, relief="groove")
 menu.add_cascade(label = "Interpolation", menu = submenu5)
-submenu5.add_radiobutton(label = "new" ,command = popup2)
+submenu5.add_radiobutton(label = "Newton's Interpolation" ,command = popup2)
+submenu5.add_radiobutton(label = "Lagrange Interpolation" ,command = popup3)
 
 
 
