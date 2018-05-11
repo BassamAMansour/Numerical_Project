@@ -184,9 +184,11 @@ def import_from_file_interpolation():
     global x_list
     global fx_list
     global globalInterpolation
+    global lagrange
     r = Reader()
     r.read_interpolation(file.name)
     globalInterpolation = r.interpolation_order
+    lagrange = r.operation_interpolation
     x_list = r.x_list
     fx_list = r.fx_list
     w = InterpolationWindow()
